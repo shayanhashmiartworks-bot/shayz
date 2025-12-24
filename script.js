@@ -136,32 +136,42 @@ function triggerScare() {
 wakeTrigger.addEventListener('click', triggerScare);
 wakeTrigger.addEventListener('touchstart', triggerScare, { passive: true });
 
-// 6. Hub Dynamics
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-    
-    if (mainHub.style.display === 'flex') {
-        const x = (e.clientX / window.innerWidth - 0.5) * 15;
-        const y = (e.clientY / window.innerHeight - 0.5) * 15;
-        document.querySelector('.links-container').style.transform = `translate(${x}px, ${y}px)`;
-    }
-});
+// 6. Hub Dynamics (Desktop only)
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.addEventListener('mousemove', (e) => {
+        if (cursor) {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        }
+        
+        if (mainHub.style.display === 'flex') {
+            const x = (e.clientX / window.innerWidth - 0.5) * 15;
+            const y = (e.clientY / window.innerHeight - 0.5) * 15;
+            const linksContainer = document.querySelector('.links-container');
+            if (linksContainer) {
+                linksContainer.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        }
+    });
+}
 
-const magnets = document.querySelectorAll('.magnetic');
-magnets.forEach(m => {
-    m.addEventListener('mousemove', (e) => {
-        const rect = m.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        m.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px) scale(1.02)`;
-        document.body.classList.add('cursor-hover');
+// Magnetic links (Desktop only)
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const magnets = document.querySelectorAll('.magnetic');
+    magnets.forEach(m => {
+        m.addEventListener('mousemove', (e) => {
+            const rect = m.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            m.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px) scale(1.02)`;
+            document.body.classList.add('cursor-hover');
+        });
+        m.addEventListener('mouseleave', () => {
+            m.style.transform = '';
+            document.body.classList.remove('cursor-hover');
+        });
     });
-    m.addEventListener('mouseleave', () => {
-        m.style.transform = '';
-        document.body.classList.remove('cursor-hover');
-    });
-});
+}
 
 moreTrigger.addEventListener('click', () => {
     hubDropdown.classList.toggle('show');
