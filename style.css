@@ -62,9 +62,7 @@ body {
 
 @media (max-width: 768px) {
     .data-stream {
-        width: 150px;
-        padding: 10px;
-        font-size: 0.4rem;
+        display: none;
     }
 }
 
@@ -90,8 +88,12 @@ body {
 @media (max-width: 768px) {
     .boot-sequence {
         top: 20px;
-        right: 20px;
-        gap: 3px;
+        right: 0;
+        left: 0;
+        width: 100%;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
     }
     
     .boot-line {
@@ -235,8 +237,8 @@ body {
 
 @media (max-width: 480px) {
     .progress-container {
-        width: 180px;
-        margin-top: 30px;
+        width: 200px;
+        margin-top: 28px;
     }
 }
 
@@ -371,17 +373,17 @@ body {
 
 @media (max-width: 768px) {
     .line {
-        letter-spacing: 0.8em;
-        margin: 15px 0;
-        font-size: clamp(1rem, 6vw, 1.5rem);
+        letter-spacing: 0.7em;
+        margin: 14px 0;
+        font-size: clamp(1rem, 6vw, 1.4rem);
     }
 }
 
 @media (max-width: 480px) {
     .line {
-        letter-spacing: 0.5em;
+        letter-spacing: 0.45em;
         margin: 12px 0;
-        font-size: clamp(0.9rem, 7vw, 1.2rem);
+        font-size: clamp(0.95rem, 7vw, 1.15rem);
     }
 }
 
@@ -434,14 +436,14 @@ body {
 @media (max-width: 768px) {
     #main-hub {
         padding: 40px 15px;
-        padding-bottom: 120px;
+        padding-bottom: 80px;
     }
 }
 
 @media (max-width: 480px) {
     #main-hub {
         padding: 30px 12px;
-        padding-bottom: 100px;
+        padding-bottom: 70px;
     }
 }
 
@@ -477,7 +479,7 @@ body {
 @media (max-width: 768px) {
     .hub-header {
         margin-bottom: 60px;
-        padding: 0 15px;
+        padding: 0 10px;
     }
     
     .glitch-title {
@@ -515,7 +517,7 @@ body {
 @media (max-width: 480px) {
     .links-container {
         padding: 0;
-        gap: 8px;
+        gap: 12px;
     }
 }
 
@@ -535,15 +537,15 @@ body {
 
 @media (max-width: 768px) {
     .hub-link {
-        padding: 25px 20px;
-        min-height: 70px;
+        padding: 22px 18px;
+        min-height: 72px;
     }
 }
 
 @media (max-width: 480px) {
     .hub-link {
-        padding: 22px 18px;
-        min-height: 65px;
+        padding: 20px 16px;
+        min-height: 70px;
     }
 }
 
@@ -619,18 +621,18 @@ body {
 
 @media (max-width: 768px) {
     .dropdown-item {
-        padding: 16px 25px;
+        padding: 15px 22px;
         font-size: 0.6rem;
-        letter-spacing: 0.2em;
+        letter-spacing: 0.18em;
     }
 }
 
 @media (max-width: 480px) {
     .dropdown-item {
-        padding: 14px 20px;
-        font-size: 0.55rem;
-        letter-spacing: 0.15em;
-        min-height: 45px;
+        padding: 14px 18px;
+        font-size: 0.54rem;
+        letter-spacing: 0.14em;
+        min-height: 48px;
     }
 }
 
@@ -674,22 +676,24 @@ body {
 
 @media (max-width: 768px) {
     .hub-footer {
-        bottom: 20px;
-        padding: 0 30px;
+        position: static;
+        padding: 20px 20px 30px;
         font-size: 0.45rem;
-        letter-spacing: 0.4em;
+        letter-spacing: 0.35em;
         flex-direction: column;
-        gap: 5px;
+        gap: 6px;
         align-items: center;
+        text-align: center;
     }
 }
 
 @media (max-width: 480px) {
     .hub-footer {
-        bottom: 15px;
-        padding: 0 20px;
+        position: static;
+        padding: 15px 15px 25px;
         font-size: 0.4rem;
-        letter-spacing: 0.3em;
+        letter-spacing: 0.28em;
+        text-align: center;
     }
 }
 
