@@ -1,139 +1,133 @@
 // ========================================
-// SHAYZ.WORLD - Jumpscare + Reveal
+// SHAYZ.WORLD - Surreal Jumpscare Logic
 // ========================================
 
 const enterScreen = document.getElementById('enter-screen');
 const jumpscare = document.getElementById('jumpscare');
 const mainContent = document.getElementById('main-content');
+const canvas = document.getElementById('scare-canvas');
+const ctx = canvas.getContext('2d');
 
-let audioContext = null;
+let audioCtx = null;
 
-// Create horrifying sound
-function createScareSound() {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+// Initialize Canvas for Jumpscare
+function initCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', initCanvas);
+initCanvas();
+
+// Draw Nightmare Face on Canvas
+function drawScare(t) {
+    if (!jumpscare.classList.contains('active')) return;
     
-    // Layer 1: Low rumble
-    const osc1 = audioContext.createOscillator();
-    const gain1 = audioContext.createGain();
-    osc1.type = 'sawtooth';
-    osc1.frequency.setValueAtTime(50, audioContext.currentTime);
-    osc1.frequency.exponentialRampToValueAtTime(30, audioContext.currentTime + 0.5);
-    gain1.gain.setValueAtTime(0.8, audioContext.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
-    osc1.connect(gain1);
-    gain1.connect(audioContext.destination);
-    osc1.start();
-    osc1.stop(audioContext.currentTime + 0.6);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Layer 2: High scream
-    const osc2 = audioContext.createOscillator();
-    const gain2 = audioContext.createGain();
-    osc2.type = 'square';
-    osc2.frequency.setValueAtTime(800, audioContext.currentTime);
-    osc2.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.4);
-    gain2.gain.setValueAtTime(0.5, audioContext.currentTime);
-    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    osc2.connect(gain2);
-    gain2.connect(audioContext.destination);
-    osc2.start();
-    osc2.stop(audioContext.currentTime + 0.5);
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
     
-    // Layer 3: Distorted noise
-    const bufferSize = audioContext.sampleRate * 0.5;
-    const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    // Glitchy distorted eyes
+    const eyeSpread = canvas.width * 0.15;
+    const eyeSize = canvas.width * 0.1 + Math.random() * 50;
+    
+    ctx.fillStyle = '#fff';
+    // Left eye
+    ctx.beginPath();
+    ctx.ellipse(centerX - eyeSpread + Math.random()*20, centerY - 100, eyeSize, eyeSize * 1.5, Math.random(), 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Right eye
+    ctx.beginPath();
+    ctx.ellipse(centerX + eyeSpread - Math.random()*20, centerY - 100, eyeSize, eyeSize * 1.5, Math.random(), 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Mouth
+    ctx.beginPath();
+    ctx.moveTo(centerX - 200, centerY + 100);
+    ctx.quadraticCurveTo(centerX, centerY + 400 + Math.random()*100, centerX + 200, centerY + 100);
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = '#fff';
+    ctx.stroke();
+    
+    // Random noise lines
+    for(let i=0; i<10; i++) {
+        ctx.beginPath();
+        ctx.moveTo(Math.random()*canvas.width, Math.random()*canvas.height);
+        ctx.lineTo(Math.random()*canvas.width, Math.random()*canvas.height);
+        ctx.strokeStyle = `rgba(255,255,255,${Math.random()})`;
+        ctx.stroke();
+    }
+    
+    requestAnimationFrame(drawScare);
+}
+
+// Intense Glitch Sound
+function playScream() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    const duration = 0.8;
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(1, audioCtx.currentTime);
+    masterGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    masterGain.connect(audioCtx.destination);
+
+    // Deep rumble
+    const rumble = audioCtx.createOscillator();
+    rumble.type = 'sawtooth';
+    rumble.frequency.setValueAtTime(40, audioCtx.currentTime);
+    rumble.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + duration);
+    rumble.connect(masterGain);
+    rumble.start();
+    rumble.stop(audioCtx.currentTime + duration);
+
+    // High frequency noise scream
+    const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
+    for (let i = 0; i < output.length; i++) {
+        output[i] = (Math.random() * 2 - 1) * (1 - i/output.length);
     }
-    const noise = audioContext.createBufferSource();
+    const noise = audioCtx.createBufferSource();
     noise.buffer = noiseBuffer;
-    const noiseGain = audioContext.createGain();
-    noiseGain.gain.setValueAtTime(0.6, audioContext.currentTime);
-    noiseGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-    noise.connect(noiseGain);
-    noiseGain.connect(audioContext.destination);
+    
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 1000;
+    
+    noise.connect(filter);
+    filter.connect(masterGain);
     noise.start();
-    noise.stop(audioContext.currentTime + 0.4);
-    
-    // Layer 4: Sudden impact
-    const osc3 = audioContext.createOscillator();
-    const gain3 = audioContext.createGain();
-    osc3.type = 'triangle';
-    osc3.frequency.setValueAtTime(150, audioContext.currentTime);
-    osc3.frequency.exponentialRampToValueAtTime(20, audioContext.currentTime + 0.3);
-    gain3.gain.setValueAtTime(1, audioContext.currentTime);
-    gain3.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    osc3.connect(gain3);
-    gain3.connect(audioContext.destination);
-    osc3.start();
-    osc3.stop(audioContext.currentTime + 0.3);
 }
 
-// Handle enter click
-function handleEnter() {
-    // Hide enter screen
-    enterScreen.classList.add('hidden');
-    
-    // Show jumpscare
-    jumpscare.classList.add('active');
-    
-    // Play scary sound
-    createScareSound();
-    
-    // Add screen flash effect
-    document.body.style.background = '#fff';
+// Execution
+enterScreen.addEventListener('click', () => {
+    enterScreen.style.opacity = '0';
     setTimeout(() => {
-        document.body.style.background = '#000';
-    }, 50);
-    setTimeout(() => {
-        document.body.style.background = '#ff0000';
-    }, 100);
-    setTimeout(() => {
-        document.body.style.background = '#000';
-    }, 150);
-    
-    // End jumpscare after delay
-    setTimeout(() => {
-        jumpscare.classList.remove('active');
-        jumpscare.style.display = 'none';
-        mainContent.classList.add('visible');
-    }, 600);
-}
-
-// Event listeners
-enterScreen.addEventListener('click', handleEnter);
-enterScreen.addEventListener('touchstart', handleEnter, { passive: true });
-
-// Prevent scroll
-document.body.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-}, { passive: false });
-
-// Add random glitch effect to main content
-function randomGlitch() {
-    if (mainContent.classList.contains('visible')) {
-        const words = document.querySelectorAll('.word');
-        const randomWord = words[Math.floor(Math.random() * words.length)];
+        enterScreen.style.display = 'none';
         
-        randomWord.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
-        randomWord.style.opacity = Math.random() * 0.5 + 0.5;
+        // Activate Jumpscare
+        jumpscare.classList.add('active');
+        playScream();
+        requestAnimationFrame(drawScare);
         
+        // Vibrate if mobile
+        if (navigator.vibrate) navigator.vibrate([100, 50, 200]);
+
+        // End Scare
         setTimeout(() => {
-            randomWord.style.transform = 'none';
-            randomWord.style.opacity = 1;
-        }, 100);
+            jumpscare.classList.remove('active');
+            mainContent.classList.add('visible');
+        }, 800);
+    }, 500);
+});
+
+// Subtle background shift for surreal feel
+document.addEventListener('mousemove', (e) => {
+    if (mainContent.classList.contains('visible')) {
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 20;
+        document.querySelector('.reveal-container').style.transform = `translate(${x}px, ${y}px)`;
     }
-    
-    setTimeout(randomGlitch, Math.random() * 3000 + 2000);
-}
-
-// Start random glitches after content shows
-setTimeout(randomGlitch, 3000);
-
-// Subtle cursor effect on mobile (vibrate if supported)
-if (navigator.vibrate) {
-    enterScreen.addEventListener('touchstart', () => {
-        navigator.vibrate(50);
-    });
-}
-
+});
