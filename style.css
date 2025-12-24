@@ -24,8 +24,9 @@ body {
     background: var(--bg);
     color: var(--fg);
     font-family: var(--main-font);
-    overflow: hidden;
-    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100vh;
     width: 100vw;
 }
 
@@ -98,6 +99,9 @@ body {
     
     .boot-line {
         font-size: 0.45rem;
+        max-width: 90%;
+        line-height: 1.4;
+        word-break: break-word;
     }
 }
 
@@ -156,16 +160,16 @@ body {
 @media (max-width: 768px) {
     .enter-text {
         font-size: 1rem;
-        letter-spacing: 0.6em;
-        text-indent: 0.6em;
+        letter-spacing: 0.5em;
+        text-indent: 0.5em;
     }
 }
 
 @media (max-width: 480px) {
     .enter-text {
-        font-size: 0.9rem;
-        letter-spacing: 0.4em;
-        text-indent: 0.4em;
+        font-size: 0.95rem;
+        letter-spacing: 0.35em;
+        text-indent: 0.35em;
     }
 }
 
@@ -220,8 +224,8 @@ body {
 
 @media (max-width: 480px) {
     .touch-hint {
-        font-size: 0.5rem;
-        letter-spacing: 0.25em;
+        font-size: 0.52rem;
+        letter-spacing: 0.22em;
         margin-top: 12px;
     }
 }
@@ -375,7 +379,7 @@ body {
     .line {
         letter-spacing: 0.7em;
         margin: 14px 0;
-        font-size: clamp(1rem, 6vw, 1.4rem);
+        font-size: clamp(1rem, 6vw, 1.35rem);
     }
 }
 
@@ -383,7 +387,7 @@ body {
     .line {
         letter-spacing: 0.45em;
         margin: 12px 0;
-        font-size: clamp(0.95rem, 7vw, 1.15rem);
+        font-size: clamp(0.92rem, 7vw, 1.1rem);
     }
 }
 
@@ -426,7 +430,7 @@ body {
     display: none;
     flex-direction: column;
     align-items: center;
-    padding: 60px 20px;
+    padding: 50px 20px;
     min-height: 100vh;
     overflow-y: auto;
     background: var(--bg);
@@ -442,7 +446,7 @@ body {
 
 @media (max-width: 480px) {
     #main-hub {
-        padding: 30px 12px;
+        padding: 32px 12px;
         padding-bottom: 70px;
     }
 }
@@ -467,6 +471,7 @@ body {
     letter-spacing: -0.06em;
     line-height: 0.85;
     text-transform: uppercase;
+    word-break: break-word;
 }
 
 .hub-subtitle {
@@ -517,7 +522,7 @@ body {
 @media (max-width: 480px) {
     .links-container {
         padding: 0;
-        gap: 12px;
+        gap: 14px;
     }
 }
 
@@ -570,12 +575,12 @@ body {
 @media (max-width: 768px) {
     .link-label {
         font-size: 0.9rem;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.1em;
     }
     
     .link-sub {
         font-size: 0.5rem;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.1em;
     }
 }
 
@@ -586,9 +591,9 @@ body {
     }
     
     .link-sub {
-        font-size: 0.48rem;
-        letter-spacing: 0.1em;
-        margin-top: 5px;
+        font-size: 0.5rem;
+        letter-spacing: 0.09em;
+        margin-top: 4px;
     }
 }
 
