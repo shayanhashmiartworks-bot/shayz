@@ -2,7 +2,8 @@
 // SHAYZ.WORLD - Core Experience Engine
 // ========================================
 
-const interactLayer = document.getElementById('interact-layer');
+const enterScreen = document.getElementById('enter-screen');
+const wakeTrigger = document.getElementById('wake-trigger');
 const jumpscare = document.getElementById('jumpscare');
 const revealScreen = document.getElementById('reveal-screen');
 const mainHub = document.getElementById('main-hub');
@@ -23,151 +24,95 @@ function init() {
 window.addEventListener('resize', init);
 init();
 
-// 2. Audio Engine (Terror Layering)
+// 2. Audio Engine
 function playTerrorSound() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    const duration = 1.2;
+    const duration = 1.0;
     const masterGain = audioCtx.createGain();
-    masterGain.gain.setValueAtTime(2.0, audioCtx.currentTime);
+    masterGain.gain.setValueAtTime(1.8, audioCtx.currentTime);
     masterGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
     masterGain.connect(audioCtx.destination);
 
-    // Deep Sub Rumble
-    const rumble = audioCtx.createOscillator();
-    rumble.type = 'sawtooth';
-    rumble.frequency.setValueAtTime(55, audioCtx.currentTime);
-    rumble.frequency.exponentialRampToValueAtTime(1, audioCtx.currentTime + duration);
-    rumble.connect(masterGain);
-    rumble.start();
-    rumble.stop(audioCtx.currentTime + duration);
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(60, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + duration);
+    osc.connect(masterGain);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
 
-    // High Frequency Metallic Scream
-    const scream = audioCtx.createOscillator();
-    scream.type = 'square';
-    scream.frequency.setValueAtTime(1500, audioCtx.currentTime);
-    scream.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.5);
-    scream.connect(masterGain);
-    scream.start();
-    scream.stop(audioCtx.currentTime + 0.5);
-
-    // White Noise Distortion
-    const bufferSize = audioCtx.sampleRate * duration;
-    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i/bufferSize);
-    
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = noiseBuffer;
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'highpass';
-    filter.frequency.value = 1200;
-    noise.connect(filter);
-    filter.connect(masterGain);
-    noise.start();
+    const screech = audioCtx.createOscillator();
+    screech.type = 'square';
+    screech.frequency.setValueAtTime(1000, audioCtx.currentTime);
+    screech.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.5);
+    screech.connect(masterGain);
+    screech.start();
+    screech.stop(audioCtx.currentTime + 0.5);
 }
 
-// 3. Jumpscare Rendering
+// 3. Jumpscare Visuals
 function drawScare() {
     if (!jumpscare.classList.contains('active')) return;
-
-    // Background flicker
-    ctx.fillStyle = Math.random() > 0.8 ? '#fff' : '#000';
+    ctx.fillStyle = Math.random() > 0.85 ? '#fff' : '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
-    // Abstract Distorted Entity
     ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 1 + Math.random() * 50;
+    ctx.lineWidth = Math.random() * 40;
     
-    // Core Distortions
-    for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        ctx.arc(cx + (Math.random()-0.5)*200, cy + (Math.random()-0.5)*200, 
-                150 + Math.random()*100, 0, Math.PI*2);
-        ctx.stroke();
-    }
-
-    // Nightmare Eyes
-    ctx.fillStyle = '#fff';
-    const eyeSize = 60 + Math.random() * 100;
     ctx.beginPath();
-    ctx.ellipse(cx - 120, cy - 80, eyeSize, eyeSize * 1.5, Math.random(), 0, Math.PI*2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx + 120, cy - 80, eyeSize, eyeSize * 1.5, Math.random(), 0, Math.PI*2);
-    ctx.fill();
+    ctx.arc(cx + (Math.random()-0.5)*100, cy + (Math.random()-0.5)*100, 200 + Math.random()*100, 0, Math.PI*2);
+    ctx.stroke();
 
-    // Red Gaze
+    // Red eyes
     ctx.fillStyle = '#f00';
     ctx.beginPath();
-    ctx.arc(cx - 120 + (Math.random()-0.5)*40, cy - 80, 20, 0, Math.PI*2);
-    ctx.arc(cx + 120 + (Math.random()-0.5)*40, cy - 80, 20, 0, Math.PI*2);
+    ctx.arc(cx - 100 + (Math.random()-0.5)*40, cy - 50, 20 + Math.random()*30, 0, Math.PI*2);
+    ctx.arc(cx + 100 + (Math.random()-0.5)*40, cy - 50, 20 + Math.random()*30, 0, Math.PI*2);
     ctx.fill();
-
-    // Void Mouth
-    ctx.beginPath();
-    ctx.moveTo(cx - 200, cy + 180);
-    ctx.lineTo(cx + 200, cy + 180);
-    ctx.quadraticCurveTo(cx, cy + 400 + Math.random()*200, cx - 200, cy + 180);
-    ctx.stroke();
 
     scareInterval = requestAnimationFrame(drawScare);
 }
 
-// 4. Experience Sequencer
-function triggerExperience() {
-    interactLayer.classList.add('hidden');
+// 4. State Transitions
+function triggerScare() {
+    enterScreen.style.display = 'none';
+    jumpscare.classList.add('active');
+    jumpscare.style.display = 'flex';
     
-    // Flash White
-    document.body.style.background = '#fff';
-    
+    playTerrorSound();
+    drawScare();
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
     setTimeout(() => {
-        document.body.style.background = '#000';
-        jumpscare.classList.add('active');
-        jumpscare.style.display = 'flex';
+        jumpscare.classList.remove('active');
+        jumpscare.style.display = 'none';
+        cancelAnimationFrame(scareInterval);
         
-        playTerrorSound();
-        drawScare();
-        
-        if (navigator.vibrate) navigator.vibrate([100, 50, 200, 50, 300]);
+        revealScreen.style.display = 'flex';
+        setTimeout(() => revealScreen.classList.add('reveal-active'), 100);
 
-        // Transition to Reveal
         setTimeout(() => {
-            jumpscare.classList.remove('active');
-            jumpscare.style.display = 'none';
-            cancelAnimationFrame(scareInterval);
-            
-            revealScreen.style.display = 'flex';
-            setTimeout(() => revealScreen.classList.add('reveal-active'), 100);
-
-            // Transition to Hub
+            revealScreen.style.opacity = '0';
             setTimeout(() => {
-                revealScreen.style.opacity = '0';
-                setTimeout(() => {
-                    revealScreen.style.display = 'none';
-                    mainHub.style.display = 'flex';
-                    document.body.style.overflowY = 'auto';
-                    document.body.classList.remove('loading');
-                }, 1000);
-            }, 3500);
-        }, 850);
-    }, 50);
+                revealScreen.style.display = 'none';
+                mainHub.style.display = 'flex';
+                document.body.style.overflowY = 'auto';
+            }, 1000);
+        }, 3500);
+    }, 850);
 }
 
-// Initial Interaction Listener
-interactLayer.addEventListener('mousedown', triggerExperience);
-interactLayer.addEventListener('touchstart', triggerExperience, { passive: true });
+wakeTrigger.addEventListener('click', triggerScare);
+wakeTrigger.addEventListener('touchstart', triggerScare, { passive: true });
 
 // 5. Hub Dynamics
-// Custom Cursor
 document.addEventListener('mousemove', (e) => {
     cursor.style.left = e.clientX + 'px';
     cursor.style.top = e.clientY + 'px';
     
-    // Subtle background parallax for the hub
     if (mainHub.style.display === 'flex') {
         const x = (e.clientX / window.innerWidth - 0.5) * 15;
         const y = (e.clientY / window.innerHeight - 0.5) * 15;
@@ -175,7 +120,6 @@ document.addEventListener('mousemove', (e) => {
     }
 });
 
-// Magnetic Links Effect
 const magnets = document.querySelectorAll('.magnetic');
 magnets.forEach(m => {
     m.addEventListener('mousemove', (e) => {
@@ -185,28 +129,14 @@ magnets.forEach(m => {
         m.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px) scale(1.02)`;
         document.body.classList.add('cursor-hover');
     });
-    
     m.addEventListener('mouseleave', () => {
         m.style.transform = '';
         document.body.classList.remove('cursor-hover');
     });
 });
 
-// Dropdown Logic
 moreTrigger.addEventListener('click', () => {
     hubDropdown.classList.toggle('show');
     moreTrigger.querySelector('.link-sub').textContent = 
         hubDropdown.classList.contains('show') ? 'COLLAPSE NETWORK' : 'PROJECTS & SOURCE';
 });
-
-// Title Glitch Effect (Random)
-const title = document.querySelector('.glitch-title');
-setInterval(() => {
-    if (mainHub.style.display === 'flex') {
-        const intense = Math.random() > 0.95;
-        title.style.textShadow = intense 
-            ? `${Math.random()*15}px 0 rgba(255,0,0,0.8), ${-Math.random()*15}px 0 rgba(0,255,255,0.8)`
-            : 'none';
-        if (intense) setTimeout(() => title.style.textShadow = 'none', 100);
-    }
-}, 2000);

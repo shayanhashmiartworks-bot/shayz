@@ -26,24 +26,104 @@ body {
     width: 100vw;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--grey-3); transition: background 0.3s; }
-::-webkit-scrollbar-thumb:hover { background: var(--fg); }
-
 /* ========================================
-   1. INTERACT LAYER (Invisible Trigger)
+   1. ENTER SCREEN (AUTOMATED BOOT)
    ======================================== */
 
-#interact-layer {
+#enter-screen {
     position: fixed;
     inset: 0;
-    z-index: 9999;
-    background: transparent;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
-#interact-layer.hidden { display: none; }
+.boot-sequence {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.boot-line {
+    font-family: var(--pixel-font);
+    font-size: 0.6rem;
+    color: var(--grey-3);
+    letter-spacing: 0.2em;
+    opacity: 0;
+    animation: bootIn 0.5s forwards;
+    animation-delay: var(--d);
+}
+
+@keyframes bootIn {
+    to { opacity: 1; transform: translateX(5px); }
+}
+
+.pixel-frame {
+    border: 1px solid var(--grey-3);
+    padding: 30px 60px;
+    background: transparent;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    opacity: 0;
+    transform: scale(0.9);
+    animation: frameIn 1.5s forwards 1s;
+    cursor: pointer;
+}
+
+@keyframes frameIn {
+    to { opacity: 1; transform: scale(1); }
+}
+
+.pixel-frame:hover {
+    border-color: var(--fg);
+    background: var(--fg);
+    box-shadow: 0 0 30px rgba(255,255,255,0.1);
+}
+
+.pixel-frame:hover .enter-text {
+    color: var(--bg);
+}
+
+.enter-text {
+    font-size: 1.2rem;
+    letter-spacing: 1em;
+    color: var(--grey-3);
+    font-weight: 700;
+    text-indent: 1em;
+    transition: color 0.3s;
+}
+
+.system-log {
+    margin-top: 40px;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    color: var(--grey-3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeIn 1s forwards 2s;
+}
+
+.pulse-red {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: blink 0.8s infinite;
+}
+
+.scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.02) 1px, rgba(255,255,255,0.02) 2px);
+    pointer-events: none;
+}
 
 /* ========================================
    2. JUMPSCARE
@@ -53,9 +133,8 @@ body {
     position: fixed;
     inset: 0;
     background: #000;
-    z-index: 1000;
+    z-index: 2000;
     display: none;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
@@ -66,16 +145,6 @@ body {
     width: 100%;
     height: 100%;
     filter: brightness(250%) contrast(180%) grayscale(1);
-    transform: scale(1.1);
-}
-
-.glitch-flash {
-    position: absolute;
-    inset: 0;
-    background: #fff;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 1001;
 }
 
 /* ========================================
@@ -85,15 +154,12 @@ body {
 #reveal-screen {
     position: fixed;
     inset: 0;
+    background: #000;
+    z-index: 1500;
     display: none;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #000;
-    z-index: 500;
 }
-
-.reveal-content { text-align: center; }
 
 .line {
     font-size: clamp(1.2rem, 5vw, 1.8rem);
@@ -104,22 +170,14 @@ body {
     transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.line.bold {
-    font-weight: 800;
-    color: var(--accent);
-    text-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-}
+.line.bold { font-weight: 800; color: var(--accent); }
 
-.reveal-active .line {
-    opacity: 1;
-    transform: translateY(0);
-}
+.reveal-active .line { opacity: 1; transform: translateY(0); }
 
 .sub-line {
     font-size: 0.7rem;
     letter-spacing: 0.4em;
-    color: #444;
-    font-style: italic;
+    color: #333;
     opacity: 0;
     margin-top: 40px;
     transition: opacity 2s ease 2s;
@@ -147,14 +205,9 @@ body {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     opacity: 0.04;
     pointer-events: none;
-    z-index: 1;
 }
 
-.hub-header {
-    margin-bottom: 100px;
-    text-align: center;
-    z-index: 2;
-}
+.hub-header { margin-bottom: 100px; text-align: center; }
 
 .glitch-title {
     font-family: var(--header-font);
@@ -162,7 +215,6 @@ body {
     letter-spacing: -0.06em;
     line-height: 0.85;
     text-transform: uppercase;
-    color: var(--fg);
 }
 
 .hub-subtitle {
@@ -170,7 +222,6 @@ body {
     letter-spacing: 0.8em;
     color: #333;
     margin-top: 25px;
-    text-indent: 0.8em;
 }
 
 .links-container {
@@ -179,7 +230,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 2;
 }
 
 .hub-link {
@@ -193,48 +243,20 @@ body {
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.hub-link:hover {
-    background: var(--fg);
-    border-color: var(--fg);
-}
+.hub-link:hover { background: var(--fg); border-color: var(--fg); }
 
-.link-label {
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.15em;
-    color: var(--fg);
-    transition: color 0.3s;
-}
-
-.link-sub {
-    font-size: 0.55rem;
-    letter-spacing: 0.15em;
-    color: #444;
-    margin-top: 6px;
-    text-transform: uppercase;
-    transition: color 0.3s;
-}
+.link-label { font-weight: 700; font-size: 0.95rem; letter-spacing: 0.15em; color: var(--fg); transition: color 0.3s; }
+.link-sub { font-size: 0.55rem; letter-spacing: 0.15em; color: #444; margin-top: 6px; transition: color 0.3s; }
 
 .hub-link:hover .link-label { color: var(--bg); }
 .hub-link:hover .link-sub { color: #888; }
 
-/* Pulse Glow for Primary */
-.link-primary {
-    border-color: rgba(255, 0, 0, 0.4);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.05);
-}
-
-.link-primary:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
-}
-
+.link-primary { border-color: rgba(255, 0, 0, 0.4); }
+.link-primary:hover { background: var(--accent); border-color: var(--accent); }
 .link-primary:hover .link-label { color: var(--fg); }
 .link-primary:hover .link-sub { color: rgba(255, 255, 255, 0.6); }
 
 /* Dropdown */
-.dropdown-container { width: 100%; }
 .dropdown-content { display: none; flex-direction: column; gap: 2px; margin-top: 2px; }
 .dropdown-content.show { display: flex; }
 
@@ -245,15 +267,10 @@ body {
     font-size: 0.65rem;
     color: #444;
     letter-spacing: 0.25em;
-    border: 1px solid transparent;
     transition: all 0.3s;
 }
 
-.dropdown-item:hover {
-    color: var(--fg);
-    background: var(--grey-2);
-    border-color: var(--grey-3);
-}
+.dropdown-item:hover { color: var(--fg); background: var(--grey-2); }
 
 /* Cursor */
 #custom-cursor {
@@ -265,14 +282,10 @@ body {
     z-index: 10000;
     mix-blend-mode: difference;
     transform: translate(-50%, -50%);
-    transition: width 0.3s, height 0.3s, background 0.3s;
+    transition: width 0.3s, height 0.3s;
 }
 
-.cursor-hover #custom-cursor {
-    width: 60px;
-    height: 60px;
-    background: rgba(255,255,255,0.1);
-}
+.cursor-hover #custom-cursor { width: 60px; height: 60px; }
 
 /* Footer */
 .hub-footer {
@@ -285,16 +298,7 @@ body {
     font-size: 0.5rem;
     letter-spacing: 0.5em;
     color: #222;
-    z-index: 2;
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-
-@media (max-width: 600px) {
-    .glitch-title { font-size: 18vw; }
-    .hub-link { padding: 25px; }
-    .hub-footer { padding: 0 25px; bottom: 15px; }
-    .line { font-size: 1rem; letter-spacing: 0.8em; }
-}
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes blink { 50% { opacity: 0; } }
