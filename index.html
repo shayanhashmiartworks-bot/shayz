@@ -7,11 +7,11 @@
     <meta name="theme-color" content="#000000">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=DotGothic16&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=DotGothic16&family=Syne:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="booting">
-    <!-- 1. ENTRY SCREEN -->
+    <!-- 1. SURREAL ENTRY SCREEN (More Fuss & Glitch) -->
     <div id="enter-screen">
         <div class="data-stream" id="boot-log"></div>
         
@@ -47,7 +47,7 @@
     <!-- 2. THE SCARE -->
     <div id="jumpscare">
         <canvas id="scare-canvas"></canvas>
-        <div class="vhs-glitch"></div>
+        <div class="scare-overlay"></div>
     </div>
 
     <!-- 3. THE REVEAL -->
@@ -64,40 +64,42 @@
     <!-- 4. THE ACTUAL HUB -->
     <main id="main-hub">
         <div class="noise-bg"></div>
+        <div class="scanline-overlay"></div>
         
         <header class="hub-header">
-            <h1 class="hub-title">SHAYZ.WORLD</h1>
+            <h1 class="glitch-title" data-text="SHAYZ.WORLD">SHAYZ.WORLD</h1>
             <p class="hub-subtitle">DISTRIBUTED BY SHAYZ PRODUCTIONS</p>
         </header>
 
         <section class="links-container">
-            <a href="#" class="hub-link link-primary">
+            <a href="#" class="hub-link link-primary magnetic">
                 <span class="link-label">EXPLORE WEBSITE</span>
                 <span class="link-sub">BOOKS, SERVICES ETC.</span>
+                <div class="link-glow"></div>
             </a>
 
-            <a href="https://www.youtube.com/@shayz.crypto" class="hub-link" target="_blank">
+            <a href="https://www.youtube.com/@shayz.crypto" class="hub-link magnetic" target="_blank">
                 <span class="link-label">YOUTUBE</span>
                 <span class="link-sub">FOR DETAILED YAPS</span>
             </a>
 
-            <a href="https://www.instagram.com/shayz.crypto/" class="hub-link" target="_blank">
+            <a href="https://www.instagram.com/shayz.crypto/" class="hub-link magnetic" target="_blank">
                 <span class="link-label">INSTAGRAM</span>
                 <span class="link-sub">IM DOING IT CAUSE I LOVE IT</span>
             </a>
 
-            <a href="https://www.tiktok.com/@shayzcrypto" class="hub-link" target="_blank">
+            <a href="https://www.tiktok.com/@shayzcrypto" class="hub-link magnetic" target="_blank">
                 <span class="link-label">TIKTOK</span>
                 <span class="link-sub">TO TARGET UNEMPLOYED AUDIENCE</span>
             </a>
 
-            <a href="https://t.me/+qpDovqrgZlc3MTU0" class="hub-link" target="_blank">
+            <a href="https://t.me/+qpDovqrgZlc3MTU0" class="hub-link magnetic" target="_blank">
                 <span class="link-label">TELEGRAM CHANNEL</span>
                 <span class="link-sub">CZ WHY NOT</span>
             </a>
 
             <div class="dropdown-container">
-                <button id="more-trigger" class="hub-link">
+                <button id="more-trigger" class="hub-link magnetic">
                     <span class="link-label">THE ARCHIVE</span>
                     <span class="link-sub">PROJECTS & SOURCE</span>
                 </button>
@@ -117,6 +119,7 @@
         </footer>
     </main>
 
+    <div id="custom-cursor"></div>
     <script src="script.js"></script>
 </body>
 </html>
